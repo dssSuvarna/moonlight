@@ -1,0 +1,78 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.1'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.builderbackend'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.google.code.gson:gson'
+
+	// deps for lombok
+	compileOnly 'org.projectlombok:lombok:1.18.28'
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+	testCompileOnly 'org.projectlombok:lombok:1.18.28'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+	// for the mysql db
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// needed for  com.mysql.cj.jdbc.Driver
+	implementation 'mysql:mysql-connector-java:8.0.23'
+
+	// password
+	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// app Security 
+	implementation "org.springframework.boot:spring-boot-starter-security"
+
+	//for the random string generator
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+	// used to validation annotations
+	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+
+
+	// to handle sending notifications to frontend. This enables handling for timestamp which is type "Instant"
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
+
+	// to send emails for notifications
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+	// for custome login failure handler
+	implementation 'jakarta.security.enterprise:jakarta.security.enterprise-api:3.0.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+bootJar {
+   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+}
+
+// Using this to pass in the mySQL password via a commandline argument on startup rather then hard coding it
+// ./gradlew bootrun -Dpassword=<your_actual_password>
+bootRun {
+    if (project.hasProperty('password')) {
+        args = ["--spring.datasource.password=${password}", "--spring.mail.password='${password}'"]
+
+    }
+
+}
